@@ -16,8 +16,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 );
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IAuthServices, AuthServices>();
+builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 
 builder
     .Services.AddAuthentication(options =>
