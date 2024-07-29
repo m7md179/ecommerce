@@ -4,6 +4,7 @@ import { HiOutlineBookOpen } from "react-icons/hi";
 import { IoSearch } from "react-icons/io5";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import  banner from "@/images/banner.jpg"
 import { 
   Card ,
   CardTitle,
@@ -19,6 +20,8 @@ import{
   CarouselPrevious,
   CarouselNext
 } from "@/components/ui/carousel"
+import Navbar from "./components/Navbar";
+import Image from "next/image";
 export default function Home() {
 
   const router = useRouter();
@@ -27,26 +30,19 @@ export default function Home() {
   };
   return (
     <main>
-      <header className="border-b-2 border-[#f0f0f0] border-solid">
-        <div className="w-[100vw] h-[106px] grid grid-cols-3 items-center">
-          <div className="flex items-center justify-center">
-            <a href="#" className="flex items-center justify-center font-bold p-4"><HiOutlineBookOpen /></a>
-            <a href="#" className="flex items-center justify-center p-4">ABOUT</a>
-          </div>
-          <div className="flex items-center justify-center ">
-            <input type="text" className="w-[500px] h-[35px] rounded-2xl p-2 bg-gray-200" placeholder="Search..." />
-          </div>
-          <div className="flex items-center justify-center">
-            <Button onClick={goToLoginPage} className="w-[80px]">
-              Login
-            </Button>
-          </div>
+      <Navbar onClick={goToLoginPage}/>
+      <section className="flex flex-col items-center justify-center p-8">
+        <div className="grid grid-cols-2 items-center h-[700px] text-center">
+          
+          <h2 className="">Description: words words words words words</h2>           
+            <Image
+                        
+                alt="banner"
+                src={banner}
+                className="w-full h-full"
+                layout="responsive"
+              />
         </div>
-      </header>
-      <section className=" flex flex-col items-center justify-center">
-          <div className="w-full h-[600px] bg-slate-200">
-
-          </div>
         <div className="w-[80vw] h-[100vh] flex justify-center items-center mt-[-100px]">   
           <Carousel
             opts={{ align: "start"}}
