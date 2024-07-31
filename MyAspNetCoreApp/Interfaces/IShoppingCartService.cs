@@ -6,7 +6,7 @@ using MyAspNetCoreApp.DTOs;
 
 namespace MyAspNetCoreApp.Interfaces
 {
-    public class IShoppingCartService
+    public interface IShoppingCartService
     {
         Task<ShoppingCartDto> GetCartByUserIdAsync(string userId);
 

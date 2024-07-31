@@ -6,7 +6,7 @@ using MyAspNetCoreApp.Models;
 
 namespace MyAspNetCoreApp.Interfaces
 {
-    public class IShoppingCartRepository
+    public interface IShoppingCartRepository
     {
         Task<ShoppingCart> GetCartByUserIdAsync(string userId);
 
