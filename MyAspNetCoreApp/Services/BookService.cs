@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using FluentValidation;
 using MyAspNetCoreApp.DTOs;
 using MyAspNetCoreApp.Interfaces;
 using MyAspNetCoreApp.Models;
@@ -13,11 +14,17 @@ namespace MyAspNetCoreApp.Services
     {
         private readonly IBookRepository _bookRepository;
         private readonly IMapper _mapper;
+        private readonly IValidator<BookDto> _validator;
 
-        public BookService(IBookRepository bookRepository, IMapper mapper)
+        public BookService(
+            IBookRepository bookRepository,
+            IMapper mapper,
+            IValidator<BookDto> validator
+        )
         {
             _bookRepository = bookRepository;
             _mapper = mapper;
+            _validator = validator;
         }
 
         public async Task<IEnumerable<BookDto>> GetAllBooksAsync()
@@ -32,21 +39,28 @@ namespace MyAspNetCoreApp.Services
             return _mapper.Map<BookDto>(book);
         }
 
-        public async Task AddBookAsync(BookDto bookDto)
+        public async Task<BookDto> AddBookAsync(BookDto bookDto)
         {
+            await _validator.ValidateAndThrowAsync(bookDto);
             var book = _mapper.Map<Book>(bookDto);
-            await _bookRepository.AddBookAsync(book);
+            var addedBook = await _bookRepository.AddBookAsync(book);
+            return _mapper.Map<BookDto>(addedBook);
         }
 
-        public async Task UpdateBookAsync(BookDto bookDto)
+        public async Task<BookDto> UpdateBookAsync(int id, BookDto bookDto)
         {
+            await _validator.ValidateAndThrowAsync(bookDto);
+            if (id != bookDto.Id)
+                throw new ArgumentException("Id mismatch");
+
             var book = _mapper.Map<Book>(bookDto);
-            await _bookRepository.UpdateBookAsync(book);
+            var updatedBook = await _bookRepository.UpdateBookAsync(book);
+            return _mapper.Map<BookDto>(updatedBook);
         }
 
-        public async Task DeleteBookAsync(int id)
+        public async Task<bool> DeleteBookAsync(int id)
         {
-            await _bookRepository.DeleteBookAsync(id);
+            return await _bookRepository.DeleteBookAsync(id);
         }
     }
 }

@@ -21,8 +21,7 @@ export default function Home() {
         <div className="grid grid-cols-2 items-center h-[700px] text-center">
           
           <h2 className="">Description: words words words words words</h2>           
-            <Image
-                        
+            <Image                    
                 alt="banner"
                 src={banner}
                 className="w-full h-full"

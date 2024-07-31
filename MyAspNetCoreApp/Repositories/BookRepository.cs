@@ -28,26 +28,29 @@ namespace MyAspNetCoreApp.Repositories
             return await _context.Books.FindAsync(id);
         }
 
-        public async Task AddBookAsync(Book book)
+        public async Task<Book> AddBookAsync(Book book)
         {
             await _context.Books.AddAsync(book);
             await _context.SaveChangesAsync();
+            return book;
         }
 
-        public async Task UpdateBookAsync(Book book)
+        public async Task<Book> UpdateBookAsync(Book book)
         {
-            _context.Books.Update(book);
+            _context.Entry(book).State = EntityState.Modified;
             await _context.SaveChangesAsync();
+            return book;
         }
 
-        public async Task DeleteBookAsync(int id)
+        public async Task<bool> DeleteBookAsync(int id)
         {
             var book = await _context.Books.FindAsync(id);
-            if (book != null)
-            {
-                _context.Books.Remove(book);
-                await _context.SaveChangesAsync();
-            }
+            if (book == null)
+                return false;
+
+            _context.Books.Remove(book);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }
