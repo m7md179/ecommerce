@@ -14,7 +14,7 @@ namespace MyAspNetCoreApp.Validator
             RuleFor(x => x.Title).NotEmpty().MaximumLength(200);
             RuleFor(x => x.Author).NotEmpty().MaximumLength(100);
             RuleFor(x => x.Price).GreaterThan(0);
-            RuleFor(x => x.ISBN).NotEmpty().Matches(@"^\d{10}|\d{13}$");
+            // RuleFor(x => x.ISBN).NotEmpty().Matches(@"^\d{10}|\d{13}$");
             RuleFor(x => x.Stock).GreaterThanOrEqualTo(0);
         }
     }

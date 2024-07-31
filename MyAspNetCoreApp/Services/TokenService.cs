@@ -19,7 +19,7 @@ namespace MyAspNetCoreApp.Services
         public TokenService(IConfiguration config)
         {
             _config = config;
-            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["TokenKey"]));
+            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:Key"]));
         }
 
         public string CreateToken(AppUser user)

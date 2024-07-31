@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MyAspNetCoreApp.Data;
 using MyAspNetCoreApp.Interfaces;
+using MyAspNetCoreApp.Mapper;
 using MyAspNetCoreApp.Models;
 using MyAspNetCoreApp.Repositories;
 using MyAspNetCoreApp.Services;
@@ -104,6 +105,7 @@ builder
     });
 
 builder.Services.AddAuthorization();
+builder.Services.AddAutoMapper(typeof(BookMapper));
 
 var app = builder.Build();
 

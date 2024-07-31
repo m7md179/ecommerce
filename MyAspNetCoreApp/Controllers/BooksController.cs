@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyAspNetCoreApp.DTOs;
@@ -11,14 +12,16 @@ namespace MyAspNetCoreApp.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    // [Authorize]
     public class BooksController : ControllerBase
     {
         private readonly IBookService _bookService;
+        private readonly IMapper _mapper;
 
-        public BooksController(IBookService bookService)
+        public BooksController(IBookService bookService, IMapper mapper)
         {
             _bookService = bookService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -38,18 +41,20 @@ namespace MyAspNetCoreApp.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<BookDto>> AddBook([FromBody] BookDto bookDto)
+        public async Task<ActionResult<BookDto>> AddBook([FromBody] BookAddDto bookAddDto)
         {
-            var addedBook = await _bookService.AddBookAsync(bookDto);
-            return CreatedAtAction(nameof(GetBookById), new { id = addedBook.Id }, addedBook);
+            var addedBook = _mapper.Map<BookDto>(bookAddDto);
+            await _bookService.AddBookAsync(bookAddDto);
+            var bookAdd = _mapper.Map<BookAddDto>(addedBook);
+            return CreatedAtAction(nameof(GetBookById), new { id = addedBook.Id }, bookAdd);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBook(int id, [FromBody] BookDto bookDto)
+        public async Task<IActionResult> UpdateBook(int id, [FromBody] BookUpdateDto bookUpdateDto)
         {
             try
             {
-                var updatedBook = await _bookService.UpdateBookAsync(id, bookDto);
+                var updatedBook = await _bookService.UpdateBookAsync(id, bookUpdateDto);
                 return Ok(updatedBook);
             }
             catch (ArgumentException)

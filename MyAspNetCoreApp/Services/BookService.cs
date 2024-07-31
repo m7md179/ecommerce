@@ -14,17 +14,11 @@ namespace MyAspNetCoreApp.Services
     {
         private readonly IBookRepository _bookRepository;
         private readonly IMapper _mapper;
-        private readonly IValidator<BookDto> _validator;
 
-        public BookService(
-            IBookRepository bookRepository,
-            IMapper mapper,
-            IValidator<BookDto> validator
-        )
+        public BookService(IBookRepository bookRepository, IMapper mapper)
         {
             _bookRepository = bookRepository;
             _mapper = mapper;
-            _validator = validator;
         }
 
         public async Task<IEnumerable<BookDto>> GetAllBooksAsync()
@@ -39,22 +33,23 @@ namespace MyAspNetCoreApp.Services
             return _mapper.Map<BookDto>(book);
         }
 
-        public async Task<BookDto> AddBookAsync(BookDto bookDto)
+        public async Task<BookDto> AddBookAsync(BookAddDto bookAddDto)
         {
-            await _validator.ValidateAndThrowAsync(bookDto);
-            var book = _mapper.Map<Book>(bookDto);
+            var book = _mapper.Map<Book>(bookAddDto);
             var addedBook = await _bookRepository.AddBookAsync(book);
             return _mapper.Map<BookDto>(addedBook);
         }
 
-        public async Task<BookDto> UpdateBookAsync(int id, BookDto bookDto)
+        public async Task<BookDto> UpdateBookAsync(int id, BookUpdateDto bookUpdateDto)
         {
-            await _validator.ValidateAndThrowAsync(bookDto);
-            if (id != bookDto.Id)
-                throw new ArgumentException("Id mismatch");
+            var existingBook = await _bookRepository.GetBookByIdAsync(id);
+            if (existingBook == null)
+            {
+                throw new KeyNotFoundException($"Book with id {id} not found.");
+            }
 
-            var book = _mapper.Map<Book>(bookDto);
-            var updatedBook = await _bookRepository.UpdateBookAsync(book);
+            _mapper.Map(bookUpdateDto, existingBook);
+            var updatedBook = await _bookRepository.UpdateBookAsync(existingBook);
             return _mapper.Map<BookDto>(updatedBook);
         }
 
