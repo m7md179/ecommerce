@@ -17,5 +17,11 @@ namespace MyAspNetCoreApp.Data
         public DbSet<Book> Books { get; set; }
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
         public DbSet<ShoppingCartItem> ShoppingCartItems { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            // Add any additional configurations here
+        }
     }
 }

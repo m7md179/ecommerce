@@ -1,19 +1,24 @@
+// Program.cs
 using System.Text;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MyAspNetCoreApp.Data;
 using MyAspNetCoreApp.Interfaces;
+using MyAspNetCoreApp.Models;
 using MyAspNetCoreApp.Repositories;
 using MyAspNetCoreApp.Services;
+using MyAspNetCoreApp.Validator;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(option =>
 {
     option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
@@ -46,15 +51,31 @@ builder.Services.AddSwaggerGen(option =>
         }
     );
 });
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
+
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+// Register FluentValidation
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<BookDtoValidator>();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
 builder.Services.AddScoped<IBookService, BookService>();
-builder.Services.AddScoped<IAuthServices, AuthServices>();
 builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
+
+builder
+    .Services.AddIdentityCore<AppUser>(opt =>
+    {
+        // Add any identity options here
+    })
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddSignInManager<SignInManager<AppUser>>();
 
 builder
     .Services.AddAuthentication(options =>
@@ -77,7 +98,7 @@ builder
             ValidAudience = builder.Configuration["JWT:Audience"],
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"])
+                Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"])
             )
         };
     });
@@ -89,13 +110,13 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 

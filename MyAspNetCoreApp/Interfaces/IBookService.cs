@@ -10,8 +10,8 @@ namespace MyAspNetCoreApp.Interfaces
     {
         Task<IEnumerable<BookDto>> GetAllBooksAsync();
         Task<BookDto> GetBookByIdAsync(int id);
-        Task AddBookAsync(BookDto bookDto);
-        Task UpdateBookAsync(BookDto bookDto);
-        Task DeleteBookAsync(int id);
+        Task<BookDto> AddBookAsync(BookDto bookDto);
+        Task<BookDto> UpdateBookAsync(int id, BookDto bookDto);
+        Task<bool> DeleteBookAsync(int id);
     }
 }
