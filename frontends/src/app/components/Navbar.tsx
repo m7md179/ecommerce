@@ -4,7 +4,15 @@ import { HiOutlineBookOpen } from "react-icons/hi";
 import { Input } from "@/components/ui/input"
 import { SearchIcon } from "lucide-react";
 
-
+import {
+    NavigationMenu,
+    NavigationMenuContent,
+    NavigationMenuItem,
+    NavigationMenuLink,
+    NavigationMenuList,
+    NavigationMenuTrigger,
+    navigationMenuTriggerStyle,
+  } from "@/components/ui/navigation-menu"
 
 interface NavbarProps{
     onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void; 
@@ -16,7 +24,65 @@ const Navbar = forwardRef<HTMLDivElement, NavbarProps>(
             <div className="w-full h-[106px] grid grid-cols-3 items-center">
             <div className="flex items-center justify-center">
                 <a href="#" className="flex items-center justify-center font-bold p-4"><HiOutlineBookOpen /> LitEars</a>
-                <a href="#" className="flex items-center justify-center p-4">Ebooks</a>
+                <NavigationMenu>
+                    <NavigationMenuList>
+                        <NavigationMenuItem>
+                            <NavigationMenuTrigger>Ebook</NavigationMenuTrigger>
+                            <NavigationMenuContent>
+                                <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] grid-cols-1">
+                                    <li>Categories:</li>
+                                    <div className="flex items-center justefy-center gap-5">
+                                        <div>    
+                                            <li className="row-span-3">
+                                                <a href="/" >
+                                                    Literary Fiction
+                                                </a>
+                                            </li>
+                                            <li className="row-span-3">
+                                                <a href="/" >
+                                                    Literary Fiction
+                                                </a>
+                                            </li>
+                                            <li className="row-span-3">
+                                                <a href="/" >
+                                                    Literary Fiction
+                                                </a>
+                                            </li>
+                                            <li className="row-span-3">
+                                                <a href="/" >
+                                                    Literary Fiction
+                                                </a>
+                                            </li>
+                                        </div>
+                                        <div>    
+                                            <li className="row-span-3">
+                                                <a href="/" >
+                                                    Literary Fiction
+                                                </a>
+                                            </li>
+                                            <li className="row-span-3">
+                                                <a href="/" >
+                                                    Literary Fiction
+                                                </a>
+                                            </li>
+                                            <li className="row-span-3">
+                                                <a href="/" >
+                                                    Literary Fiction
+                                                </a>
+                                            </li>
+                                            <li className="row-span-3">
+                                                <a href="/" >
+                                                    Literary Fiction
+                                                </a>
+                                            </li>
+                                        </div>
+                                    </div>
+                                    
+                                </ul>
+                            </NavigationMenuContent>
+                        </NavigationMenuItem>
+                    </NavigationMenuList>
+                </NavigationMenu>
                 <a href="#" className="flex items-center justify-center p-4">Audiobooks</a>
             </div>
             <div className="flex items-center justify-center">

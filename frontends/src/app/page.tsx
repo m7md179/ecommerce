@@ -5,11 +5,15 @@ import { IoSearch } from "react-icons/io5";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import  banner from "@/images/banner.jpg"
-import ScrollItems from "./components/ScrollItems"
 import Navbar from "./components/Navbar";
+import ScrollItems from "@/app/components/ScrollItems";
 import Image from "next/image";
+import axios from "axios";
 export default function Home() {
 
+  console.log('///////');
+  console.log(axios.isCancel('something'));
+  console.log('///////');
   const router = useRouter();
   const goToLoginPage = () => {
     router.push('/login');
@@ -17,8 +21,8 @@ export default function Home() {
   return (
     <main>
       <Navbar onClick={goToLoginPage}/>
-      <section className="flex flex-col items-center justify-center p-8">
-        <div className="grid grid-cols-2 items-center h-[700px] text-center">
+      <section className="flex flex-col items-center justify-center p-8 border-4 border-red-600 border-solid">
+        <div className="grid grid-cols-2 items-center h-[700px] text-center border-4 border-green-600 border-solid">
           
           <h2 className="">Description: words words words words words</h2>           
             <Image                    
