@@ -13,6 +13,8 @@ import {
     NavigationMenuTrigger,
     navigationMenuTriggerStyle,
   } from "@/components/ui/navigation-menu"
+import Link from "next/link";
+import Category from "../books/category/page";
 
 interface NavbarProps{
     onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void; 
@@ -31,11 +33,11 @@ const Navbar = forwardRef<HTMLDivElement, NavbarProps>(
                             <NavigationMenuContent>
                                 <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] grid-cols-1">
                                     <li>Categories:</li>
-                                    <div className="flex items-center justefy-center gap-5">
+                                    <div className="flex items-center justify-start gap-10 ml-8">
                                         <div>    
                                             <li className="row-span-3">
-                                                <a href="/" >
-                                                    Literary Fiction
+                                                <a href="/books/category">
+                                                    Fiction
                                                 </a>
                                             </li>
                                             <li className="row-span-3">

@@ -11,9 +11,6 @@ import Image from "next/image";
 import axios from "axios";
 export default function Home() {
 
-  console.log('///////');
-  console.log(axios.isCancel('something'));
-  console.log('///////');
   const router = useRouter();
   const goToLoginPage = () => {
     router.push('/login');
