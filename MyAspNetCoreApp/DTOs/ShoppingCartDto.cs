@@ -8,7 +8,6 @@ namespace MyAspNetCoreApp.DTOs
     public class ShoppingCartDto
     {
         public int Id { get; set; }
-        public string UserId { get; set; }
-        public List<ShoppingCartItemDto> Items { get; set; } = new List<ShoppingCartItemDto>();
+        public List<ShoppingCartItemDto> Items { get; set; }
     }
 }

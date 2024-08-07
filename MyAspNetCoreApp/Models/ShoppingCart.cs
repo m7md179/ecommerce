@@ -8,7 +8,8 @@ namespace MyAspNetCoreApp.Models
     public class ShoppingCart
     {
         public int Id { get; set; }
-        public string UserId { get; set; }
-        public List<ShoppingCartItem> Items { get; set; } = new List<ShoppingCartItem>();
+    public string AppUserId { get; set; }
+    public AppUser AppUser { get; set; }
+    public List<ShoppingCartItem> Items { get; set; } = new List<ShoppingCartItem>();
     }
 }

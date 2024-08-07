@@ -4,7 +4,15 @@ import { HiOutlineBookOpen } from "react-icons/hi";
 import { Input } from "@/components/ui/input"
 import { SearchIcon } from "lucide-react";
 
-
+import {
+    NavigationMenu,
+    NavigationMenuContent,
+    NavigationMenuItem,
+    NavigationMenuLink,
+    NavigationMenuList,
+    NavigationMenuTrigger,
+    navigationMenuTriggerStyle,
+  } from "@/components/ui/navigation-menu"
 
 interface NavbarProps{
     onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void; 
@@ -15,8 +23,80 @@ const Navbar = forwardRef<HTMLDivElement, NavbarProps>(
         <header className="w-full border-b-2 border-[#f0f0f0] bg-white border-solid fixed z-50">
             <div className="w-full h-[106px] grid grid-cols-3 items-center">
             <div className="flex items-center justify-center">
-                <a href="#" className="flex items-center justify-center font-bold p-4"><HiOutlineBookOpen /> LitEars</a>
-                <a href="#" className="flex items-center justify-center p-4">Ebooks</a>
+                <a href="/" className="flex items-center justify-center font-bold p-4"><HiOutlineBookOpen /> LitEars</a>
+                <div className="flex items-center justify-center p-4">
+                    <NavigationMenu>
+                        <NavigationMenuList>
+                            <NavigationMenuItem>
+                                <NavigationMenuTrigger> EBooks </NavigationMenuTrigger>
+                                <NavigationMenuContent>
+                                    <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                                        <li className="row-span-3">
+                                            <NavigationMenuLink asChild>
+                                            <a
+                                                className=""
+                                                href="/"
+                                            >
+                                                book
+                                            </a>
+                                            </NavigationMenuLink>
+                                        </li>
+                                        <li className="row-span-3">
+                                            <NavigationMenuLink asChild>
+                                            <a
+                                                className=""
+                                                href="/"
+                                            >
+                                                book
+                                            </a>
+                                            </NavigationMenuLink>
+                                        </li>
+                                        <li className="row-span-3">
+                                            <NavigationMenuLink asChild>
+                                            <a
+                                                className=""
+                                                href="/"
+                                            >
+                                                book
+                                            </a>
+                                            </NavigationMenuLink>
+                                        </li>
+                                        <li className="row-span-3">
+                                            <NavigationMenuLink asChild>
+                                            <a
+                                                className=""
+                                                href="/"
+                                            >
+                                                book
+                                            </a>
+                                            </NavigationMenuLink>
+                                        </li>
+                                        <li className="row-span-3">
+                                            <NavigationMenuLink asChild>
+                                            <a
+                                                className=""
+                                                href="/"
+                                            >
+                                                book
+                                            </a>
+                                            </NavigationMenuLink>
+                                        </li>
+                                        <li className="row-span-3">
+                                            <NavigationMenuLink asChild>
+                                            <a
+                                                className=""
+                                                href="/"
+                                            >
+                                                book
+                                            </a>
+                                            </NavigationMenuLink>
+                                        </li>
+                                    </ul>
+                                </NavigationMenuContent>
+                            </NavigationMenuItem>
+                        </NavigationMenuList>
+                    </NavigationMenu>
+                </div>
                 <a href="#" className="flex items-center justify-center p-4">Audiobooks</a>
             </div>
             <div className="flex items-center justify-center">

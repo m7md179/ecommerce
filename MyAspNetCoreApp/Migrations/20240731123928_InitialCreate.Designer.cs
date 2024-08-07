@@ -12,7 +12,7 @@ using MyAspNetCoreApp.Data;
 namespace MyAspNetCoreApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240731070411_InitialCreate")]
+    [Migration("20240731123928_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -270,11 +270,14 @@ namespace MyAspNetCoreApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("AppUserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AppUserId")
+                        .IsUnique();
 
                     b.ToTable("ShoppingCarts");
                 });
@@ -287,18 +290,16 @@ namespace MyAspNetCoreApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BookId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ShoppingCartId")
+                    b.Property<int>("ShoppingCartId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BookId");
 
                     b.HasIndex("ShoppingCartId");
 
@@ -356,19 +357,32 @@ namespace MyAspNetCoreApp.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MyAspNetCoreApp.Models.ShoppingCartItem", b =>
+            modelBuilder.Entity("MyAspNetCoreApp.Models.ShoppingCart", b =>
                 {
-                    b.HasOne("MyAspNetCoreApp.Models.Book", "Book")
-                        .WithMany()
-                        .HasForeignKey("BookId")
+                    b.HasOne("MyAspNetCoreApp.Models.AppUser", "AppUser")
+                        .WithOne("ShoppingCart")
+                        .HasForeignKey("MyAspNetCoreApp.Models.ShoppingCart", "AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MyAspNetCoreApp.Models.ShoppingCart", null)
-                        .WithMany("Items")
-                        .HasForeignKey("ShoppingCartId");
+                    b.Navigation("AppUser");
+                });
 
-                    b.Navigation("Book");
+            modelBuilder.Entity("MyAspNetCoreApp.Models.ShoppingCartItem", b =>
+                {
+                    b.HasOne("MyAspNetCoreApp.Models.ShoppingCart", "ShoppingCart")
+                        .WithMany("Items")
+                        .HasForeignKey("ShoppingCartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ShoppingCart");
+                });
+
+            modelBuilder.Entity("MyAspNetCoreApp.Models.AppUser", b =>
+                {
+                    b.Navigation("ShoppingCart")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MyAspNetCoreApp.Models.ShoppingCart", b =>

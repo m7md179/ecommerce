@@ -11,35 +11,34 @@ namespace MyAspNetCoreApp.Services
 {
     public class ShoppingCartService : IShoppingCartService
     {
-        private readonly IShoppingCartRepository _shoppingCartRepository;
+        private readonly IShoppingCartRepository _repository;
         private readonly IMapper _mapper;
 
-        public ShoppingCartService(IShoppingCartRepository shoppingCartRepository, IMapper mapper)
+        public ShoppingCartService(IShoppingCartRepository repository, IMapper mapper)
         {
-            _shoppingCartRepository = shoppingCartRepository;
+            _repository = repository;
             _mapper = mapper;
         }
 
-        public async Task<ShoppingCartDto> GetCartByUserIdAsync(string userId)
+        public async Task<ShoppingCartDto> GetCartAsync(string userId)
         {
-            var cart = await _shoppingCartRepository.GetCartByUserIdAsync(userId);
+            var cart = await _repository.GetByUserIdAsync(userId);
             return _mapper.Map<ShoppingCartDto>(cart);
         }
 
-        public async Task AddToCartAsync(string userId, ShoppingCartItemDto itemDto)
+        public async Task AddItemToCartAsync(string userId, int productId, int quantity)
         {
-            var item = _mapper.Map<ShoppingCartItem>(itemDto);
-            await _shoppingCartRepository.AddToCartAsync(userId, item);
+            await _repository.AddItemAsync(userId, productId, quantity);
         }
 
-        public async Task RemoveFromCartAsync(string userId, int itemId)
+        public async Task RemoveItemFromCartAsync(string userId, int productId)
         {
-            await _shoppingCartRepository.RemoveFromCartAsync(userId, itemId);
+            await _repository.RemoveItemAsync(userId, productId);
         }
 
-        public async Task ClearCartAsync(string userId)
+        public async Task UpdateItemQuantityAsync(string userId, int productId, int quantity)
         {
-            await _shoppingCartRepository.ClearCartAsync(userId);
+            await _repository.UpdateItemQuantityAsync(userId, productId, quantity);
         }
     }
 }

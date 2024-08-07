@@ -8,12 +8,10 @@ namespace MyAspNetCoreApp.Interfaces
 {
     public interface IShoppingCartRepository
     {
-        Task<ShoppingCart> GetCartByUserIdAsync(string userId);
-
-        Task AddToCartAsync(string userId, ShoppingCartItem item);
-
-        Task RemoveFromCartAsync(string userId, int itemId);
-
-        Task ClearCartAsync(string userId);
+        Task<ShoppingCart> GetByUserIdAsync(string userId);
+        Task AddItemAsync(string userId, int productId, int quantity);
+        Task RemoveItemAsync(string userId, int productId);
+        Task UpdateItemQuantityAsync(string userId, int productId, int quantity);
+        Task<ShoppingCart> SaveAsync(ShoppingCart cart);
     }
 }

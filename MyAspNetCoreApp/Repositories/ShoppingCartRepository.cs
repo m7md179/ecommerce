@@ -18,48 +18,67 @@ namespace MyAspNetCoreApp.Repositories
             _context = context;
         }
 
-        public async Task<ShoppingCart> GetCartByUserIdAsync(string userId)
+        public async Task<ShoppingCart> GetByUserIdAsync(string userId)
         {
             return await _context
                 .ShoppingCarts.Include(c => c.Items)
-                .ThenInclude(i => i.Book)
-                .FirstOrDefaultAsync(c => c.UserId == userId);
+                .FirstOrDefaultAsync(c => c.AppUserId == userId);
         }
 
-        public async Task AddToCartAsync(string userId, ShoppingCartItem item)
+        public async Task AddItemAsync(string userId, int productId, int quantity)
         {
-            var cart = await GetCartByUserIdAsync(userId);
+            var cart = await GetByUserIdAsync(userId);
             if (cart == null)
             {
-                cart = new ShoppingCart { UserId = userId };
-                await _context.ShoppingCarts.AddAsync(cart);
+                cart = new ShoppingCart { AppUserId = userId };
+                _context.ShoppingCarts.Add(cart);
             }
-            cart.Items.Add(item);
+
+            var item = cart.Items.FirstOrDefault(i => i.ProductId == productId);
+            if (item == null)
+            {
+                item = new ShoppingCartItem { ProductId = productId, Quantity = quantity };
+                cart.Items.Add(item);
+            }
+            else
+            {
+                item.Quantity += quantity;
+            }
+
             await _context.SaveChangesAsync();
         }
 
-        public async Task RemoveFromCartAsync(string userId, int itemId)
+        public async Task RemoveItemAsync(string userId, int productId)
         {
-            var cart = await GetCartByUserIdAsync(userId);
-            if (cart != null)
+            var cart = await GetByUserIdAsync(userId);
+            var item = cart?.Items.FirstOrDefault(i => i.ProductId == productId);
+            if (item != null)
             {
-                var item = cart.Items.FirstOrDefault(i => i.Id == itemId);
-                if (item != null)
-                {
-                    cart.Items.Remove(item);
-                    await _context.SaveChangesAsync();
-                }
+                cart.Items.Remove(item);
+                await _context.SaveChangesAsync();
             }
         }
 
-        public async Task ClearCartAsync(string userId)
+        public async Task UpdateItemQuantityAsync(string userId, int productId, int quantity)
         {
-            var cart = await GetCartByUserIdAsync(userId);
-            if (cart != null)
+            var cart = await GetByUserIdAsync(userId);
+            var item = cart?.Items.FirstOrDefault(i => i.ProductId == productId);
+            if (item != null)
             {
-                _context.ShoppingCarts.Remove(cart);
+                item.Quantity = quantity;
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<ShoppingCart> SaveAsync(ShoppingCart cart)
+        {
+            if (cart.Id == 0)
+                _context.ShoppingCarts.Add(cart);
+            else
+                _context.ShoppingCarts.Update(cart);
+
+            await _context.SaveChangesAsync();
+            return cart;
         }
     }
 }

@@ -8,6 +8,10 @@ import  banner from "@/images/banner.jpg"
 import ScrollItems from "./components/ScrollItems"
 import Navbar from "./components/Navbar";
 import Image from "next/image";
+
+
+
+
 export default function Home() {
 
   const router = useRouter();

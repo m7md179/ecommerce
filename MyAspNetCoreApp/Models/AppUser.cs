@@ -10,5 +10,6 @@ namespace MyAspNetCoreApp.Models
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public ShoppingCart ShoppingCart { get; set; }
     }
 }
