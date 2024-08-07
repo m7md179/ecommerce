@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Button } from "../../components/ui/button";
+import { Button } from "@/components/ui/button";
 import { 
     Card ,
     CardTitle,
@@ -8,19 +8,19 @@ import {
     CardContent,
     CardFooter,
     CardHeader
-  } from "../../components/ui/card"
+  } from "@/components/ui/card"
   import{
     Carousel,
     CarouselContent,
     CarouselItem,
     CarouselPrevious,
     CarouselNext
-  } from "../../components/ui/carousel"
+  } from "@/components/ui/carousel"
 import { Book } from '@/types/book';
-import { getBookInfo } from "../../services/bookService";
+import { getBookInfo } from "@/services/bookService";
 import {useEffect, useState} from 'react';
   
-interface ScrollItemsProps{
+interface BookScrollProps{
   books: Book[];
 }
 
@@ -29,7 +29,7 @@ interface ScrollItemsProps{
  * @param props - The properties for the component.
  * @returns The rendered component.
  */
-const ScrollItems: React.FC<ScrollItemsProps> = ({books}: ScrollItemsProps): JSX.Element => {
+const BookScroll: React.FC<BookScrollProps> = ({books}: BookScrollProps): JSX.Element => {
     return(
         <Carousel
             opts={{ align: "start"}}
@@ -67,4 +67,4 @@ const ScrollItems: React.FC<ScrollItemsProps> = ({books}: ScrollItemsProps): JSX
     );
 }
 
-export default ScrollItems;
+export default BookScroll;

@@ -1,13 +1,29 @@
-import axiosInstance from "@/utils/axiosInsance"; 
+import axios from 'axios';
+import { Book } from '@/types/book';
 
-const API_URL = 'http://localhost:5148/api/books';
+export async function getBookInfo(isbn: string): Promise<Book | null> {
+  const url = `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`;
 
-export const getBookById = async (id: number) => {
   try {
-    const response = await axiosInstance.get(`${API_URL}/${id}`);
-    return response.data;
+    const response = await axios.get(url);
+    const bookData = response.data[`ISBN:${isbn}`];
+
+    if (!bookData) {
+      console.log("Book not found");
+      return null;
+    }
+    const bookInfo: Book = {
+      title: bookData.title,
+      authors: bookData.authors,
+      cover: bookData.cover ? bookData.cover.large : undefined,
+      publish_date: bookData.publish_date,
+      number_of_pages: bookData.number_of_pages,
+    };
+
+    return bookInfo;
   } catch (error) {
-    console.error('Error fetching the book:', error);
-    throw error;
+    console.error("Error fetching book data:", error);
+    return null;
   }
-};
+
+}
