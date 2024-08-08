@@ -36,13 +36,7 @@ namespace MyAspNetCoreApp.Controllers
             if (await _userRepository.GetUserByEmailAsync(registerDto.Email) != null)
                 return BadRequest("Email is taken");
 
-            var user = new AppUser
-            {
-                Email = registerDto.Email,
-                UserName = registerDto.Email,
-                FirstName = registerDto.FirstName,
-                LastName = registerDto.LastName
-            };
+            var user = new AppUser { Email = registerDto.Email, UserName = registerDto.Email, };
 
             var result = await _userManager.CreateAsync(user, registerDto.Password);
 
@@ -53,8 +47,6 @@ namespace MyAspNetCoreApp.Controllers
             {
                 Id = user.Id,
                 Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
                 Token = _tokenService.CreateToken(user)
             };
         }
@@ -80,8 +72,6 @@ namespace MyAspNetCoreApp.Controllers
             {
                 Id = user.Id,
                 Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
                 Token = _tokenService.CreateToken(user)
             };
         }
