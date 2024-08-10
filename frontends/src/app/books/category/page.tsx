@@ -3,50 +3,51 @@ import Navbar from "@/app/components/Navbar"
 import ScrollItems from "@/app/components/ScrollItems"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
-import { getBookInfo } from "../../../services/bookService"
+import { bookService, getBookInfo } from "../../../services/bookService"
 import { useState, useEffect } from "react"
 import { Book } from "@/types/book"
 import BookScroll from "./components/BookScroll"
 
-const isbnList = [
-  // Romance Ebooks
-  "9780385533225",
-  "9780262033848",
-  "9780131103627",
-  "9781451673319",
-  "9780316769488",
-  "9780743273565",
-  "9781501175565",
-  "9780385545969",
-  "9780140283297",
-  "9780061120084",
-  // Mystery Ebooks
-  "9780679783268",
-  "9780316015844",
-  "9780451524935",
-  "9780553382563",
-  "9780060935467",
-  "9780307346605",
-  "9780767908184",
-  "9780385490818",
-  "9780743496704",
-  "9780062316097",
-  // Thriller Ebooks
-  "9781400032716",
-  "9780060838676",
-  "9780812981605",
-  "9780316024990",
-  "9780767922711",
-  "9780375703768",
-  "9780679785897",
-  "9781400079273",
-  "9780062024039",
-]
+// const isbnList = [
+//   // Romance Ebooks
+//   "9780385533225",
+//   "9780262033848",
+//   "9780131103627",
+//   "9781451673319",
+//   "9780316769488",
+//   "9780743273565",
+//   "9781501175565",
+//   "9780385545969",
+//   "9780140283297",
+//   "9780061120084",
+//   // Mystery Ebooks
+//   "9780679783268",
+//   "9780316015844",
+//   "9780451524935",
+//   "9780553382563",
+//   "9780060935467",
+//   "9780307346605",
+//   "9780767908184",
+//   "9780385490818",
+//   "9780743496704",
+//   "9780062316097",
+//   // Thriller Ebooks
+//   "9781400032716",
+//   "9780060838676",
+//   "9780812981605",
+//   "9780316024990",
+//   "9780767922711",
+//   "9780375703768",
+//   "9780679785897",
+//   "9781400079273",
+//   "9780062024039",
+// ]
 
 export default function Category() {
   const router = useRouter()
   const [books, setBooks] = useState<Book[]>([])
   const [categories, setCategories] = useState<{ [key: string]: Book[] }>({})
+  const [isbnList, setIsbnList] = useState([])
   const [isLoading, setLoading] = useState(true)
 
   const goToLoginPage = () => {
@@ -56,6 +57,8 @@ export default function Category() {
   useEffect(() => {
     async function fetchBooks() {
       try {
+        const fetchedIsbnList = await bookService.getAllBooks()
+        setIsbnList(fetchedIsbnList)
         const bookPromises = isbnList.map((isbn) => getBookInfo(isbn))
         const booksData = await Promise.all(bookPromises)
         const filteredBooks = booksData.filter((book) => book !== null) as Book[]
