@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react"
-import { Button } from "../../components/ui/button"
+import React from "react"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardTitle,
@@ -7,17 +7,17 @@ import {
   CardContent,
   CardFooter,
   CardHeader,
-} from "../../components/ui/card"
+} from "@/components/ui/card"
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
-} from "../../components/ui/carousel"
+} from "@/components/ui/carousel"
 import { Book } from "@/types/book"
-import { getBookInfo } from "../../services/bookService"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useShoppingCart } from "@/context/ShoppingCartContext"
 
 interface ScrollItemsProps {
   books: Book[]
@@ -25,6 +25,8 @@ interface ScrollItemsProps {
 }
 
 const ScrollItems: React.FC<ScrollItemsProps> = ({ books, isLoading }) => {
+  const { addToCart } = useShoppingCart()
+
   return (
     <Carousel opts={{ align: "start" }} className="w-full">
       <CarouselContent>
@@ -36,7 +38,7 @@ const ScrollItems: React.FC<ScrollItemsProps> = ({ books, isLoading }) => {
                   <Skeleton className="h-5 w-32" />
                 ) : (
                   <CardTitle>
-                    <p className="text-sm">{(book as Book)?.title}</p>
+                    <p className="text-sm">{(book as Book).title}</p>
                   </CardTitle>
                 )}
               </CardHeader>
@@ -44,7 +46,7 @@ const ScrollItems: React.FC<ScrollItemsProps> = ({ books, isLoading }) => {
                 <div>
                   {isLoading ? (
                     <Skeleton className="h-[120px] w-[80px]" />
-                  ) : (book as Book)?.cover ? (
+                  ) : (book as Book).cover ? (
                     <img
                       src={(book as Book).cover}
                       alt="Book Cover"
@@ -67,10 +69,20 @@ const ScrollItems: React.FC<ScrollItemsProps> = ({ books, isLoading }) => {
                   {isLoading ? (
                     <Skeleton className="h-5 w-32" />
                   ) : (
-                    (book as Book)?.authors?.map((author) => author.name).join(", ")
+                    (book as Book).authors?.map((author) => author.name).join(", ")
                   )}
                 </CardDescription>
-                <Button>Add to cart</Button>
+                <Button
+                  onClick={() => {
+                    if (!isLoading && book) {
+                      console.log("Book being added:", book) // Debug log
+                      addToCart(book as Book)
+                    }
+                  }}
+                  disabled={isLoading}
+                >
+                  Add to cart
+                </Button>
               </CardFooter>
             </Card>
           </CarouselItem>

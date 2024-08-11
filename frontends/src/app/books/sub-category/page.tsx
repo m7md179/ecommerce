@@ -11,9 +11,11 @@ import {
 import { getBookInfo } from "@/services/bookService"
 import { Book } from "@/types/book"
 import BookCard from "./components/BookCard"
-import Navbar from "@/app/components/Navbar"
+import Navbar from "@/components/Navbar"
 import { useRouter } from "next/navigation"
 import { Skeleton } from "@/components/ui/skeleton"
+import SearchResult from "@/components/SearchResult"
+import { useShoppingCart } from "@/context/ShoppingCartContext"
 
 const ITEMS_PER_PAGE = 12
 const thrillerIsbns = [
@@ -46,7 +48,10 @@ function SubCategory() {
   const [currentPage, setCurrentPage] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [searchResults, setSearchResults] = useState<any[]>([])
   const router = useRouter()
+
+  const { addToCart } = useShoppingCart()
 
   useEffect(() => {
     async function fetchBooks() {
@@ -75,25 +80,32 @@ function SubCategory() {
   const goToLoginPage = () => {
     router.push("/login")
   }
+  const handleSearch = (results: any[]) => {
+    setSearchResults(results)
+  }
 
   return (
     <main>
-      <Navbar onClick={goToLoginPage} />
+      <Navbar onClick={goToLoginPage} onSearch={handleSearch} />
       <div className="h-[200px]"></div>
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full max-w-6xl">
-          {isLoading
-            ? Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
-                <div key={i} className="bg-gray-200 rounded-lg p-4 animate-pulse">
-                  <div className="h-[180px] bg-gray-300 rounded"></div>
-                  <div className="mt-4">
-                    <Skeleton className="h-4 w-full mb-2" />
-                    <Skeleton className="h-4 w-full mb-2" />
-                    <Skeleton className="h-8 w-full" />
-                  </div>
+          {searchResults.length > 0 ? (
+            <SearchResult searchResults={searchResults} isLoading={isLoading} />
+          ) : isLoading ? (
+            Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
+              <div key={i} className="bg-gray-200 rounded-lg p-4 animate-pulse">
+                <div className="h-[180px] bg-gray-300 rounded"></div>
+                <div className="mt-4">
+                  <Skeleton className="h-4 w-full mb-2" />
+                  <Skeleton className="h-4 w-full mb-2" />
+                  <Skeleton className="h-8 w-full" />
                 </div>
-              ))
-            : books.map((book, i) => <BookCard key={i} book={book} />)}
+              </div>
+            ))
+          ) : (
+            books.map((book, i) => <BookCard key={i} book={book} />)
+          )}
         </div>
         <div className="my-14">
           <Pagination>

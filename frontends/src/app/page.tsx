@@ -3,12 +3,13 @@ import { useRouter } from "next/navigation"
 
 import Link from "next/link"
 import banner from "@/images/banner.jpg"
-import Navbar from "./components/Navbar"
-import ScrollItems from "@/app/components/ScrollItems"
+import Navbar from "@/components/Navbar"
+import ScrollItems from "@/components/ScrollItems"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import { Book } from "@/types/book"
 import { getBookInfo } from "@/services/bookService"
+import SearchResult from "@/components/SearchResult"
 
 const isbnList = [
   "9780385533225",
@@ -38,8 +39,9 @@ const isbnList = [
 
 export default function Home() {
   const [books, setBooks] = useState<Book[]>([])
-  const router = useRouter()
+  const [searchResults, setSearchResults] = useState<any[]>([])
   const [isLoading, setLoading] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -61,24 +63,33 @@ export default function Home() {
   const goToLoginPage = () => {
     router.push("/login")
   }
+  const handleSearch = (results: any[]) => {
+    setSearchResults(results)
+  }
 
   return (
     <main>
-      <Navbar onClick={goToLoginPage} />
+      <Navbar onClick={goToLoginPage} onSearch={handleSearch} />
       <section className="flex flex-col items-center justify-center p-8">
-        <div className="grid grid-cols-2 items-center h-[700px] text-center">
-          <h2 className="">Description: words words words words words</h2>
-          <Image
-            alt="banner"
-            src={banner}
-            className="w-full h-full"
-            layout="responsive"
-            priority
-          />
-        </div>
-        <div className="w-[80vw] h-[100vh] flex justify-center items-center mt-[-100px]">
-          <ScrollItems books={books} isLoading={isLoading} />
-        </div>
+        {searchResults.length > 0 ? (
+          <SearchResult searchResults={searchResults} isLoading={isLoading} />
+        ) : (
+          <>
+            <div className="grid grid-cols-2 items-center h-[700px] text-center">
+              <h2 className="">Description: words words words words words</h2>
+              <Image
+                alt="banner"
+                src={banner}
+                className="w-full h-full"
+                layout="responsive"
+                priority
+              />
+            </div>
+            <div className="w-[80vw] h-[100vh] flex justify-center items-center mt-[-100px]">
+              <ScrollItems books={books} isLoading={isLoading} />
+            </div>
+          </>
+        )}
       </section>
     </main>
   )
