@@ -5,4 +5,6 @@ export interface Book {
   publish_date: string;
   number_of_pages: number;
   }
-  
+export interface IsbnBook{
+  isbn: string;
+}

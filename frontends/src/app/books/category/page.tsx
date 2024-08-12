@@ -6,48 +6,10 @@ import { useRouter } from "next/navigation"
 import { bookService, getBookInfo } from "../../../services/bookService"
 import { useState, useEffect } from "react"
 import { Book } from "@/types/book"
-import BookScroll from "./components/BookScroll"
-
-// const isbnList = [
-//   // Romance Ebooks
-//   "9780385533225",
-//   "9780262033848",
-//   "9780131103627",
-//   "9781451673319",
-//   "9780316769488",
-//   "9780743273565",
-//   "9781501175565",
-//   "9780385545969",
-//   "9780140283297",
-//   "9780061120084",
-//   // Mystery Ebooks
-//   "9780679783268",
-//   "9780316015844",
-//   "9780451524935",
-//   "9780553382563",
-//   "9780060935467",
-//   "9780307346605",
-//   "9780767908184",
-//   "9780385490818",
-//   "9780743496704",
-//   "9780062316097",
-//   // Thriller Ebooks
-//   "9781400032716",
-//   "9780060838676",
-//   "9780812981605",
-//   "9780316024990",
-//   "9780767922711",
-//   "9780375703768",
-//   "9780679785897",
-//   "9781400079273",
-//   "9780062024039",
-// ]
 
 export default function Category() {
   const router = useRouter()
-  const [books, setBooks] = useState<Book[]>([])
   const [categories, setCategories] = useState<{ [key: string]: Book[] }>({})
-  const [isbnList, setIsbnList] = useState([])
   const [isLoading, setLoading] = useState(true)
 
   const goToLoginPage = () => {
@@ -57,18 +19,21 @@ export default function Category() {
   useEffect(() => {
     async function fetchBooks() {
       try {
-        const fetchedIsbnList = await bookService.getAllBooks()
-        setIsbnList(fetchedIsbnList)
-        const bookPromises = isbnList.map((isbn) => getBookInfo(isbn))
-        const booksData = await Promise.all(bookPromises)
-        const filteredBooks = booksData.filter((book) => book !== null) as Book[]
-        const categories = {
-          Romance: filteredBooks.slice(0, 10),
-          Mystery: filteredBooks.slice(10, 20),
-          Thriller: filteredBooks.slice(20, 30),
+        const fetchedIsbnList = await bookService.getAllBooks();
+        // Ensure fetchedIsbnList.isbn is an array of strings
+        if (Array.isArray(fetchedIsbnList.isbn)) {
+          const bookPromises = fetchedIsbnList.isbn.map((isbn) => getBookInfo(isbn))
+          const booksData = await Promise.all(bookPromises)
+          const filteredBooks = booksData.filter((book): book is Book => book !== null)
+          const categories = {
+            Romance: filteredBooks.slice(0, 10),
+            Mystery: filteredBooks.slice(10, 20),
+            Thriller: filteredBooks.slice(20, 30),
+          }
+          setCategories(categories)
+        } else {
+          console.error("Fetched ISBN list is not an array:", fetchedIsbnList.isbn)
         }
-        setCategories(categories)
-        setBooks(filteredBooks)
       } catch (error) {
         console.error("Error fetching books:", error)
       } finally {
@@ -95,7 +60,7 @@ export default function Category() {
             </p>
           </div>
         </div>
-        {Object.entries(isLoading ? Array.from({ length: 3 }) : categories).map(
+        {Object.entries(isLoading ? {} : categories).map(
           ([category, books]) => (
             <div key={category} className="w-2/3 my-10">
               <div className="flex items-center justify-between">
@@ -104,7 +69,7 @@ export default function Category() {
                   <a href="/books/sub-category">View all</a>
                 </Button>
               </div>
-              <ScrollItems books={books as Book[]} isLoading={isLoading} />
+              <ScrollItems books={books} isLoading={isLoading} />
             </div>
           ),
         )}
