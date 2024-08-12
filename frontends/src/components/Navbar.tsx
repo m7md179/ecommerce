@@ -3,39 +3,30 @@ import { forwardRef, useState } from "react"
 import { HiOutlineBookOpen } from "react-icons/hi"
 import { Input } from "@/components/ui/input"
 import { SearchIcon } from "lucide-react"
+import { bookService } from "@/services/bookService"
+import { Book } from "@/types/book"
 
 import {
   NavigationMenu,
   NavigationMenuContent,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
-import Link from "next/link"
-import Category from "@/app/books/category/page"
 import ShoppingCart from "./ShoppingCart"
+
 interface NavbarProps {
   onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
-  onSearch: (results: any[]) => void
+  onSearch: (query: string) => Promise<void>
 }
+
 const Navbar = forwardRef<HTMLDivElement, NavbarProps>(
   ({ onClick, onSearch }, ref) => {
     const [searchQuery, setSearchQuery] = useState("")
 
     const handleSearch = async () => {
       if (searchQuery.trim() === "") return
-
-      try {
-        const response = await fetch(
-          `https://openlibrary.org/search.json?q=${encodeURIComponent(searchQuery)}`,
-        )
-        const data = await response.json()
-        onSearch(data.docs)
-      } catch (error) {
-        console.error("Error fetching book data:", error)
-      }
+      onSearch(searchQuery)
     }
 
     return (

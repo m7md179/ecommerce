@@ -7,6 +7,7 @@ export interface Book {
   number_of_pages: number
   isbn: string
   price?: number
+  stock: number
 }
 
 export interface IsbnBook {

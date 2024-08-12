@@ -49,6 +49,7 @@ const BookCard: React.FC<{ book: Book }> = ({ book }) => {
       <CardFooter className="flex items-center flex-col space-y-4 p-3">
         <CardDescription>
           {book.authors.map((author) => author.name).join(", ")}
+          <p>Price: ${book.price}</p>
         </CardDescription>
         <Button onClick={handleAddToCart}>Add to cart</Button>
       </CardFooter>

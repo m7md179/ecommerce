@@ -8,7 +8,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
-import { getBookInfo } from "@/services/bookService"
+import { bookService } from "@/services/bookService"
 import { Book } from "@/types/book"
 import BookCard from "./components/BookCard"
 import Navbar from "@/components/Navbar"
@@ -48,7 +48,7 @@ function SubCategory() {
   const [currentPage, setCurrentPage] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [searchResults, setSearchResults] = useState<any[]>([])
+  const [searchResults, setSearchResults] = useState<Book[]>([])
   const router = useRouter()
 
   const { addToCart } = useShoppingCart()
@@ -62,7 +62,9 @@ function SubCategory() {
         const endIndex = startIndex + ITEMS_PER_PAGE
         const isbnsToFetch = thrillerIsbns.slice(startIndex, endIndex)
 
-        const bookPromises = isbnsToFetch.map((isbn) => getBookInfo(isbn))
+        const bookPromises = isbnsToFetch.map((isbn) =>
+          bookService.getBookInfo(isbn),
+        )
         const booksData = await Promise.all(bookPromises)
         setBooks(booksData.filter((book): book is Book => book !== null))
       } catch (err) {
@@ -80,8 +82,15 @@ function SubCategory() {
   const goToLoginPage = () => {
     router.push("/login")
   }
-  const handleSearch = (results: any[]) => {
-    setSearchResults(results)
+
+  const handleSearch = async (query: string) => {
+    try {
+      const results = await bookService.searchBooks(query)
+      setSearchResults(results)
+    } catch (error) {
+      console.error("Error searching books:", error)
+      setSearchResults([])
+    }
   }
 
   return (
@@ -91,7 +100,7 @@ function SubCategory() {
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full max-w-6xl">
           {searchResults.length > 0 ? (
-            <SearchResult searchResults={searchResults} isLoading={isLoading} />
+            <SearchResult searchResults={searchResults} />
           ) : isLoading ? (
             Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
               <div key={i} className="bg-gray-200 rounded-lg p-4 animate-pulse">
