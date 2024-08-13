@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using MyAspNetCoreApp.DTOs;
 using MyAspNetCoreApp.Interfaces;
 using MyAspNetCoreApp.Models;
-
 namespace MyAspNetCoreApp.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class AccountController : ControllerBase
     {
         private readonly UserManager<AppUser> _userManager;
@@ -51,8 +52,8 @@ namespace MyAspNetCoreApp.Controllers
             };
         }
 
-        [HttpPost("login")]
-        public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
+        [HttpPost("Login")]
+        public async Task<ActionResult<UserDto>> Login([FromBody] LoginDto loginDto)
         {
             var user = await _userRepository.GetUserByEmailAsync(loginDto.Email);
 

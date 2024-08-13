@@ -11,34 +11,58 @@ namespace MyAspNetCoreApp.Services
 {
     public class ShoppingCartService : IShoppingCartService
     {
-        private readonly IShoppingCartRepository _repository;
-        private readonly IMapper _mapper;
+        private readonly IShoppingCartRepository _shoppingCartRepository;
 
-        public ShoppingCartService(IShoppingCartRepository repository, IMapper mapper)
+        public ShoppingCartService(IShoppingCartRepository shoppingCartRepository)
         {
-            _repository = repository;
-            _mapper = mapper;
+            _shoppingCartRepository = shoppingCartRepository;
         }
 
-        public async Task<ShoppingCartDto> GetCartAsync(string userId)
+        public async Task<ShoppingCartDto> GetCartByUserIdAsync(string userId)
         {
-            var cart = await _repository.GetByUserIdAsync(userId);
-            return _mapper.Map<ShoppingCartDto>(cart);
+            var cart = await _shoppingCartRepository.GetCartByUserIdAsync(userId);
+            if (cart == null)
+                return null;
+
+            return new ShoppingCartDto
+            {
+                Items = cart
+                    .Items.Select(i => new ShoppingCartItemDto
+                    {
+                        BookId = i.BookId,
+                        Quantity = i.Quantity,
+                        Price = i.Price
+                    })
+                    .ToList()
+            };
         }
 
-        public async Task AddItemToCartAsync(string userId, int productId, int quantity)
+        public async Task AddItemToCartAsync(string userId, ShoppingCartItemDto itemDto)
         {
-            await _repository.AddItemAsync(userId, productId, quantity);
+            await _shoppingCartRepository.AddItemToCartAsync(
+                userId,
+                itemDto.BookId,
+                itemDto.Quantity
+            );
         }
 
-        public async Task RemoveItemFromCartAsync(string userId, int productId)
+        public async Task RemoveItemFromCartAsync(string userId, int bookId)
         {
-            await _repository.RemoveItemAsync(userId, productId);
+            await _shoppingCartRepository.RemoveItemFromCartAsync(userId, bookId);
         }
 
-        public async Task UpdateItemQuantityAsync(string userId, int productId, int quantity)
+        public async Task ClearCartAsync(string userId)
         {
-            await _repository.UpdateItemQuantityAsync(userId, productId, quantity);
+            await _shoppingCartRepository.ClearCartAsync(userId);
+        }
+
+        public async Task UpdateCartItemQuantityAsync(string userId, ShoppingCartItemDto itemDto)
+        {
+            await _shoppingCartRepository.UpdateCartItemQuantityAsync(
+                userId,
+                itemDto.BookId,
+                itemDto.Quantity
+            );
         }
     }
 }
