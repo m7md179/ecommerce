@@ -8,10 +8,9 @@ namespace MyAspNetCoreApp.Interfaces
 {
     public interface IShoppingCartService
     {
-        Task<ShoppingCartDto> GetCartByUserIdAsync(string userId);
-        Task AddItemToCartAsync(string userId, ShoppingCartItemDto itemDto);
-        Task RemoveItemFromCartAsync(string userId, int bookId);
-        Task ClearCartAsync(string userId);
-        Task UpdateCartItemQuantityAsync(string userId, ShoppingCartItemDto itemDto);
+        Task<ShoppingCartDto> GetCartAsync(string userId);
+        Task AddItemToCartAsync(string userId, int productId, int quantity);
+        Task RemoveItemFromCartAsync(string userId, int productId);
+        Task UpdateItemQuantityAsync(string userId, int productId, int quantity);
     }
 }

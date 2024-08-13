@@ -13,6 +13,5 @@ namespace MyAspNetCoreApp.Interfaces
         Task<BookDto> AddBookAsync(BookAddDto bookAddDto);
         Task<BookDto> UpdateBookAsync(int id, BookUpdateDto bookUpdateDto);
         Task<bool> DeleteBookAsync(int id);
-        Task<IEnumerable<BookDto>> SearchBooksAsync(string searchTerm);
     }
 }

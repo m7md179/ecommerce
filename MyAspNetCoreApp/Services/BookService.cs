@@ -57,11 +57,5 @@ namespace MyAspNetCoreApp.Services
         {
             return await _bookRepository.DeleteBookAsync(id);
         }
-
-        public async Task<IEnumerable<BookDto>> SearchBooksAsync(string searchTerm)
-        {
-            var books = await _bookRepository.SearchBooksAsync(searchTerm);
-            return _mapper.Map<IEnumerable<BookDto>>(books);
-        }
     }
 }

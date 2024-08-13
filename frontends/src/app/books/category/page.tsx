@@ -1,6 +1,6 @@
 "use client"
-import Navbar from "@/components/Navbar"
-import ScrollItems from "@/components/ScrollItems"
+import Navbar from "@/app/components/Navbar"
+import ScrollItems from "@/app/components/ScrollItems"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { bookService, getBookInfo } from "../../../services/bookService"
@@ -19,14 +19,12 @@ export default function Category() {
   useEffect(() => {
     async function fetchBooks() {
       try {
-        const fetchedIsbnList = await bookService.getAllBooks()
+        const fetchedIsbnList = await bookService.getAllBooks();
         // Ensure fetchedIsbnList.isbn is an array of strings
         if (Array.isArray(fetchedIsbnList.isbn)) {
           const bookPromises = fetchedIsbnList.isbn.map((isbn) => getBookInfo(isbn))
           const booksData = await Promise.all(bookPromises)
-          const filteredBooks = booksData.filter(
-            (book): book is Book => book !== null,
-          )
+          const filteredBooks = booksData.filter((book): book is Book => book !== null)
           const categories = {
             Romance: filteredBooks.slice(0, 10),
             Mystery: filteredBooks.slice(10, 20),
@@ -62,17 +60,19 @@ export default function Category() {
             </p>
           </div>
         </div>
-        {Object.entries(isLoading ? {} : categories).map(([category, books]) => (
-          <div key={category} className="w-2/3 my-10">
-            <div className="flex items-center justify-between">
-              <p className="text-xl">{category} Ebooks</p>
-              <Button variant="link">
-                <a href="/books/sub-category">View all</a>
-              </Button>
+        {Object.entries(isLoading ? {} : categories).map(
+          ([category, books]) => (
+            <div key={category} className="w-2/3 my-10">
+              <div className="flex items-center justify-between">
+                <p className="text-xl">{category} Ebooks</p>
+                <Button variant="link">
+                  <a href="/books/sub-category">View all</a>
+                </Button>
+              </div>
+              <ScrollItems books={books} isLoading={isLoading} />
             </div>
-            <ScrollItems books={books} isLoading={isLoading} />
-          </div>
-        ))}
+          ),
+        )}
       </section>
     </main>
   )

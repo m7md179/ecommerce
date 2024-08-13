@@ -18,81 +18,67 @@ namespace MyAspNetCoreApp.Repositories
             _context = context;
         }
 
-        public async Task<ShoppingCart> GetCartByUserIdAsync(string userId)
+        public async Task<ShoppingCart> GetByUserIdAsync(string userId)
         {
             return await _context
                 .ShoppingCarts.Include(c => c.Items)
-                .ThenInclude(i => i.Book)
-                .FirstOrDefaultAsync(c => c.UserId == userId);
+                .FirstOrDefaultAsync(c => c.AppUserId == userId);
         }
 
-        public async Task AddItemToCartAsync(string userId, int bookId, int quantity)
+        public async Task AddItemAsync(string userId, int productId, int quantity)
         {
-            var cart = await GetCartByUserIdAsync(userId);
-
+            var cart = await GetByUserIdAsync(userId);
             if (cart == null)
             {
-                cart = new ShoppingCart { UserId = userId };
+                cart = new ShoppingCart { AppUserId = userId };
                 _context.ShoppingCarts.Add(cart);
             }
 
-            var cartItem = cart.Items.FirstOrDefault(i => i.BookId == bookId);
-            if (cartItem == null)
+            var item = cart.Items.FirstOrDefault(i => i.ProductId == productId);
+            if (item == null)
             {
-                var book = await _context.Books.FindAsync(bookId);
-                cartItem = new ShoppingCartItem
-                {
-                    BookId = bookId,
-                    Quantity = quantity,
-                    Price = book.Price,
-                    Book = book
-                };
-                cart.Items.Add(cartItem);
+                item = new ShoppingCartItem { ProductId = productId, Quantity = quantity };
+                cart.Items.Add(item);
             }
             else
             {
-                cartItem.Quantity += quantity;
+                item.Quantity += quantity;
             }
 
             await _context.SaveChangesAsync();
         }
 
-        public async Task RemoveItemFromCartAsync(string userId, int bookId)
+        public async Task RemoveItemAsync(string userId, int productId)
         {
-            var cart = await GetCartByUserIdAsync(userId);
-            if (cart == null)
-                return;
-
-            var cartItem = cart.Items.FirstOrDefault(i => i.BookId == bookId);
-            if (cartItem != null)
+            var cart = await GetByUserIdAsync(userId);
+            var item = cart?.Items.FirstOrDefault(i => i.ProductId == productId);
+            if (item != null)
             {
-                cart.Items.Remove(cartItem);
+                cart.Items.Remove(item);
                 await _context.SaveChangesAsync();
             }
         }
 
-        public async Task ClearCartAsync(string userId)
+        public async Task UpdateItemQuantityAsync(string userId, int productId, int quantity)
         {
-            var cart = await GetCartByUserIdAsync(userId);
-            if (cart != null)
+            var cart = await GetByUserIdAsync(userId);
+            var item = cart?.Items.FirstOrDefault(i => i.ProductId == productId);
+            if (item != null)
             {
-                _context.ShoppingCarts.Remove(cart);
+                item.Quantity = quantity;
                 await _context.SaveChangesAsync();
             }
         }
 
-        public async Task UpdateCartItemQuantityAsync(string userId, int bookId, int quantity)
+        public async Task<ShoppingCart> SaveAsync(ShoppingCart cart)
         {
-            var cart = await GetCartByUserIdAsync(userId);
-            if (cart == null)
-                return;
+            if (cart.Id == 0)
+                _context.ShoppingCarts.Add(cart);
+            else
+                _context.ShoppingCarts.Update(cart);
 
-            var cartItem = cart.Items.FirstOrDefault(i => i.BookId == bookId);
-            if (cartItem != null)
-            {
-                cartItem.Quantity = quantity;
-                await _context.SaveChangesAsync();
-            }
+            await _context.SaveChangesAsync();
+            return cart;
         }
     }
 }

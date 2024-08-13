@@ -52,16 +52,5 @@ namespace MyAspNetCoreApp.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
-
-        public async Task<IEnumerable<Book>> SearchBooksAsync(string searchTerm)
-        {
-            return await _context
-                .Books.Where(b =>
-                    b.Title.Contains(searchTerm)
-                    || b.Author.Contains(searchTerm)
-                    || b.ISBN.Contains(searchTerm)
-                )
-                .ToListAsync();
-        }
     }
 }

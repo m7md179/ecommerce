@@ -71,14 +71,5 @@ namespace MyAspNetCoreApp.Controllers
                 return NotFound();
             return NoContent();
         }
-
-        [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<BookDto>>> SearchBooks(
-            [FromQuery] string searchTerm
-        )
-        {
-            var books = await _bookService.SearchBooksAsync(searchTerm);
-            return Ok(books);
-        }
     }
 }

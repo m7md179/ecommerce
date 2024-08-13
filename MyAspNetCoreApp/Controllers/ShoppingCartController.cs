@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MyAspNetCoreApp.DTOs;
@@ -16,50 +15,81 @@ namespace MyAspNetCoreApp.Controllers
     public class ShoppingCartController : ControllerBase
     {
         private readonly IShoppingCartService _shoppingCartService;
+        private readonly UserManager<AppUser> _userManager;
 
-        public ShoppingCartController(IShoppingCartService shoppingCartService)
+        public ShoppingCartController(
+            IShoppingCartService shoppingCartService,
+            UserManager<AppUser> userManager
+        )
         {
             _shoppingCartService = shoppingCartService;
+            _userManager = userManager;
         }
 
-        [HttpGet("{userId}")]
-        public async Task<ActionResult<ShoppingCartDto>> GetCart(string userId)
+        [HttpGet]
+        public async Task<ActionResult<ShoppingCartDto>> GetCart()
         {
-            var cart = await _shoppingCartService.GetCartByUserIdAsync(userId);
-            if (cart == null)
-                return NotFound();
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized();
+
+            var cart = await _shoppingCartService.GetCartAsync(user.Id);
             return Ok(cart);
         }
 
-        [HttpPost("{userId}/items")]
-        public async Task<IActionResult> AddItem(string userId, ShoppingCartItemDto itemDto)
+        [HttpPost("items")]
+        public async Task<IActionResult> AddItemToCart([FromBody] AddItemRequest request)
         {
-            await _shoppingCartService.AddItemToCartAsync(userId, itemDto);
-            return NoContent();
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized();
+
+            await _shoppingCartService.AddItemToCartAsync(
+                user.Id,
+                request.ProductId,
+                request.Quantity
+            );
+            return Ok();
         }
 
-        [HttpPut("{userId}/items")]
+        [HttpDelete("items/{productId}")]
+        public async Task<IActionResult> RemoveItemFromCart(int productId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized();
+
+            await _shoppingCartService.RemoveItemFromCartAsync(user.Id, productId);
+            return Ok();
+        }
+
+        [HttpPut("items/{productId}")]
         public async Task<IActionResult> UpdateItemQuantity(
-            string userId,
-            ShoppingCartItemDto itemDto
+            int productId,
+            [FromBody] UpdateQuantityRequest request
         )
         {
-            await _shoppingCartService.UpdateCartItemQuantityAsync(userId, itemDto);
-            return NoContent();
-        }
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized();
 
-        [HttpDelete("{userId}/items/{bookId}")]
-        public async Task<IActionResult> RemoveItem(string userId, int bookId)
-        {
-            await _shoppingCartService.RemoveItemFromCartAsync(userId, bookId);
-            return NoContent();
+            await _shoppingCartService.UpdateItemQuantityAsync(
+                user.Id,
+                productId,
+                request.Quantity
+            );
+            return Ok();
         }
+    }
 
-        [HttpDelete("{userId}")]
-        public async Task<IActionResult> ClearCart(string userId)
-        {
-            await _shoppingCartService.ClearCartAsync(userId);
-            return NoContent();
-        }
+    public class AddItemRequest
+    {
+        public int ProductId { get; set; }
+        public int Quantity { get; set; }
+    }
+
+    public class UpdateQuantityRequest
+    {
+        public int Quantity { get; set; }
     }
 }

@@ -6,5 +6,8 @@ using Microsoft.AspNetCore.Identity;
 
 namespace MyAspNetCoreApp.Models
 {
-    public class AppUser : IdentityUser { }
+    public class AppUser : IdentityUser
+    {
+        public ShoppingCart ShoppingCart { get; set; }
+    }
 }
