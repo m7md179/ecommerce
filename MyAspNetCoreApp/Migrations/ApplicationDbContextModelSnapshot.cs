@@ -174,14 +174,6 @@ namespace MyAspNetCoreApp.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -267,14 +259,11 @@ namespace MyAspNetCoreApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AppUserId")
+                    b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AppUserId")
-                        .IsUnique();
 
                     b.ToTable("ShoppingCarts");
                 });
@@ -287,16 +276,21 @@ namespace MyAspNetCoreApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ProductId")
+                    b.Property<int>("BookId")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<int>("ShoppingCartId")
+                    b.Property<int?>("ShoppingCartId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BookId");
 
                     b.HasIndex("ShoppingCartId");
 
@@ -354,32 +348,19 @@ namespace MyAspNetCoreApp.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MyAspNetCoreApp.Models.ShoppingCart", b =>
-                {
-                    b.HasOne("MyAspNetCoreApp.Models.AppUser", "AppUser")
-                        .WithOne("ShoppingCart")
-                        .HasForeignKey("MyAspNetCoreApp.Models.ShoppingCart", "AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AppUser");
-                });
-
             modelBuilder.Entity("MyAspNetCoreApp.Models.ShoppingCartItem", b =>
                 {
-                    b.HasOne("MyAspNetCoreApp.Models.ShoppingCart", "ShoppingCart")
-                        .WithMany("Items")
-                        .HasForeignKey("ShoppingCartId")
+                    b.HasOne("MyAspNetCoreApp.Models.Book", "Book")
+                        .WithMany()
+                        .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ShoppingCart");
-                });
+                    b.HasOne("MyAspNetCoreApp.Models.ShoppingCart", null)
+                        .WithMany("Items")
+                        .HasForeignKey("ShoppingCartId");
 
-            modelBuilder.Entity("MyAspNetCoreApp.Models.AppUser", b =>
-                {
-                    b.Navigation("ShoppingCart")
-                        .IsRequired();
+                    b.Navigation("Book");
                 });
 
             modelBuilder.Entity("MyAspNetCoreApp.Models.ShoppingCart", b =>

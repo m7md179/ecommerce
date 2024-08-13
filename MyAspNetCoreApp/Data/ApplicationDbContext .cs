@@ -21,17 +21,6 @@ namespace MyAspNetCoreApp.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder
-                .Entity<AppUser>()
-                .HasOne(u => u.ShoppingCart)
-                .WithOne(c => c.AppUser)
-                .HasForeignKey<ShoppingCart>(c => c.AppUserId);
-
-            builder
-                .Entity<ShoppingCart>()
-                .HasMany(c => c.Items)
-                .WithOne(i => i.ShoppingCart)
-                .HasForeignKey(i => i.ShoppingCartId);
         }
     }
 }

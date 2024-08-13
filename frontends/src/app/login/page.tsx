@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import {
   Card,
   CardTitle,
-  CardDescription,
   CardContent,
   CardFooter,
   CardHeader,
@@ -15,38 +14,55 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useShoppingCart } from "@/context/ShoppingCartContext"
+import { toast } from "@/components/ui/use-toast"
 
 export default function Login() {
   const router = useRouter()
+  const { setUserId } = useShoppingCart()
   const [selectedTab, setSelectedTab] = useState<"login" | "register">("login")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [error, setError] = useState<string | null>(null)
 
   const handleRegister = async () => {
     try {
-      await register({ email, password })
-      // Handle successful registration, e.g., store user data in local storage
-      console.log("Registered user:", { email, password })
+      setError(null)
+      const response = await register({ email, password })
+      console.log("Registered user:", response)
+      toast({
+        title: "Registration successful",
+        description: "Please log in with your new account.",
+      })
+      setSelectedTab("login")
     } catch (error) {
       console.error("Registration error:", error)
+      setError("Registration failed. Please try again.")
     }
   }
 
   const handleLogin = async () => {
     try {
-      await login({ email, password })
-      // Handle successful login, e.g., store user data in local storage
-      console.log("Logged in user:", { email, password })
+      setError(null)
+      const response = await login({ email, password })
+      console.log("Logged in user:", response)
+      setUserId(response.userId)
+      toast({
+        title: "Login successful",
+        description: "Welcome back!",
+      })
       router.push("/")
     } catch (error) {
       console.error("Login error:", error)
+      setError("Login failed. Please check your credentials and try again.")
     }
   }
 
   return (
     <div className="flex items-center justify-center h-screen w-full">
       <Tabs
-        defaultValue={selectedTab}
+        value={selectedTab}
         onValueChange={(value) => setSelectedTab(value as "login" | "register")}
         className="w-[400px]"
       >
@@ -54,8 +70,13 @@ export default function Login() {
           <TabsTrigger value="login">Login</TabsTrigger>
           <TabsTrigger value="register">Register</TabsTrigger>
         </TabsList>
+        {error && (
+          <Alert variant="destructive" className="mt-4">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
         <TabsContent value="login">
-          <Card className=" bg-slate-200 shadow-md rounded-2xl p-4">
+          <Card className="bg-slate-200 shadow-md rounded-2xl p-4">
             <CardHeader>
               <CardTitle>Login</CardTitle>
             </CardHeader>
@@ -93,7 +114,7 @@ export default function Login() {
           </Card>
         </TabsContent>
         <TabsContent value="register">
-          <Card className=" bg-slate-200 shadow-md rounded-2xl p-4">
+          <Card className="bg-slate-200 shadow-md rounded-2xl p-4">
             <CardHeader>
               <CardTitle>Register</CardTitle>
             </CardHeader>

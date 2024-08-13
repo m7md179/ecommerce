@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react"
-import { Button } from "../../components/ui/button"
+import React from "react"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardTitle,
@@ -7,17 +7,18 @@ import {
   CardContent,
   CardFooter,
   CardHeader,
-} from "../../components/ui/card"
+} from "@/components/ui/card"
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
-} from "../../components/ui/carousel"
+} from "@/components/ui/carousel"
 import { Book } from "@/types/book"
-import { getBookInfo } from "../../services/bookService"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useShoppingCart } from "@/context/ShoppingCartContext"
+import { toast } from "@/components/ui/use-toast"
 
 interface ScrollItemsProps {
   books: Book[]
@@ -25,6 +26,34 @@ interface ScrollItemsProps {
 }
 
 const ScrollItems: React.FC<ScrollItemsProps> = ({ books, isLoading }) => {
+  const { addToCart, userId } = useShoppingCart()
+
+  const handleAddToCart = async (book: Book) => {
+    if (!userId) {
+      toast({
+        title: "Please log in",
+        description: "You need to be logged in to add items to your cart.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    try {
+      await addToCart(book.id, 1)
+      toast({
+        title: "Added to cart",
+        description: `${book.title} has been added to your cart.`,
+      })
+    } catch (error) {
+      console.error("Error adding book to cart:", error)
+      toast({
+        title: "Error",
+        description: "There was an error adding the book to your cart.",
+        variant: "destructive",
+      })
+    }
+  }
+
   return (
     <Carousel opts={{ align: "start" }} className="w-full">
       <CarouselContent>
@@ -36,7 +65,7 @@ const ScrollItems: React.FC<ScrollItemsProps> = ({ books, isLoading }) => {
                   <Skeleton className="h-5 w-32" />
                 ) : (
                   <CardTitle>
-                    <p className="text-sm">{(book as Book)?.title}</p>
+                    <p className="text-sm">{(book as Book).title}</p>
                   </CardTitle>
                 )}
               </CardHeader>
@@ -44,7 +73,7 @@ const ScrollItems: React.FC<ScrollItemsProps> = ({ books, isLoading }) => {
                 <div>
                   {isLoading ? (
                     <Skeleton className="h-[120px] w-[80px]" />
-                  ) : (book as Book)?.cover ? (
+                  ) : (book as Book).cover ? (
                     <img
                       src={(book as Book).cover}
                       alt="Book Cover"
@@ -67,10 +96,19 @@ const ScrollItems: React.FC<ScrollItemsProps> = ({ books, isLoading }) => {
                   {isLoading ? (
                     <Skeleton className="h-5 w-32" />
                   ) : (
-                    (book as Book)?.authors?.map((author) => author.name).join(", ")
+                    (book as Book).authors?.map((author) => author.name).join(", ")
                   )}
                 </CardDescription>
-                <Button>Add to cart</Button>
+                <Button
+                  onClick={() => {
+                    if (!isLoading && (book as Book)) {
+                      handleAddToCart(book as Book)
+                    }
+                  }}
+                  disabled={isLoading}
+                >
+                  Add to cart
+                </Button>
               </CardFooter>
             </Card>
           </CarouselItem>
