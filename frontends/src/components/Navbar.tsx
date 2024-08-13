@@ -1,10 +1,8 @@
 import { Button } from "@/components/ui/button"
-import { forwardRef, useState } from "react"
+import { forwardRef, useEffect, useState } from "react"
 import { HiOutlineBookOpen } from "react-icons/hi"
 import { Input } from "@/components/ui/input"
 import { SearchIcon } from "lucide-react"
-import { bookService } from "@/services/bookService"
-import { Book } from "@/types/book"
 
 import {
   NavigationMenu,
@@ -14,6 +12,8 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
 import ShoppingCart from "./ShoppingCart"
+import { useRouter } from "next/navigation"
+import { isLoggedIn, logout } from "@/services/auth.service"
 
 interface NavbarProps {
   onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
@@ -23,12 +23,23 @@ interface NavbarProps {
 const Navbar = forwardRef<HTMLDivElement, NavbarProps>(
   ({ onClick, onSearch }, ref) => {
     const [searchQuery, setSearchQuery] = useState("")
+    const [isUserLoggedIn, setIsUserLoggedIn] = useState(false)
+    const router = useRouter()
+
+    useEffect(() => {
+      setIsUserLoggedIn(isLoggedIn())
+    }, [])
 
     const handleSearch = async () => {
       if (searchQuery.trim() === "") return
       onSearch(searchQuery)
     }
 
+    const handleLogout = () => {
+      logout()
+      setIsUserLoggedIn(false)
+      router.push("/") // Redirect to home page after logout
+    }
     return (
       <header className="w-full border-b-2 border-[#f0f0f0] bg-white border-solid fixed z-50">
         <div className="w-full h-[106px] grid grid-cols-3 items-center">
@@ -102,9 +113,15 @@ const Navbar = forwardRef<HTMLDivElement, NavbarProps>(
             </Button>
           </div>
           <div className="flex items-center justify-center">
-            <Button onClick={onClick} className="w-[80px]">
-              Login
-            </Button>
+            {isUserLoggedIn ? (
+              <Button onClick={handleLogout} className="w-[80px]">
+                Logout
+              </Button>
+            ) : (
+              <Button onClick={onClick} className="w-[80px]">
+                Login
+              </Button>
+            )}
             <ShoppingCart />
           </div>
         </div>

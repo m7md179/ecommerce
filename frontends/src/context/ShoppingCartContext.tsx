@@ -1,14 +1,10 @@
 "use client"
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  ReactNode,
-} from "react"
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react"
 import { ShoppingCartService } from "@/services/ShoppingCartService"
-import { ShoppingCartDto } from "@/types/ShoppingCart"
+import { ShoppingCartDto, ShoppingCartItemDto } from "@/types/ShoppingCart"
+import { Book } from "@/types/book"
+import { isLoggedIn, getUserId } from "@/services/auth.service"
+import { bookService } from "@/services/bookService"
 
 interface ShoppingCartContextType {
   cart: ShoppingCartDto | null
@@ -19,23 +15,28 @@ interface ShoppingCartContextType {
   userId: string | null
   setUserId: (userId: string | null) => void
   refreshCart: () => Promise<void>
+  isUserLoggedIn: boolean
 }
 
-const ShoppingCartContext = createContext<ShoppingCartContextType | undefined>(
-  undefined,
-)
+const ShoppingCartContext = createContext<ShoppingCartContextType | undefined>(undefined)
 
-export const ShoppingCartProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
+export const ShoppingCartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [cart, setCart] = useState<ShoppingCartDto | null>(null)
   const [userId, setUserId] = useState<string | null>(null)
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState<boolean>(false)
 
   const fetchCart = useCallback(async () => {
     if (userId) {
       try {
         const cartData = await ShoppingCartService.getCart(userId)
-        setCart(cartData)
+        // Fetch book details for each item in the cart
+        const updatedItems = await Promise.all(
+          cartData.items.map(async (item) => {
+            const bookDetails = await bookService.getBookById(item.bookId)
+            return { ...item, book: bookDetails }
+          })
+        )
+        setCart({ ...cartData, items: updatedItems })
       } catch (error) {
         console.error("Error fetching cart:", error)
       }
@@ -45,6 +46,20 @@ export const ShoppingCartProvider: React.FC<{ children: ReactNode }> = ({
   }, [userId])
 
   useEffect(() => {
+    const checkLoginStatus = () => {
+      const loggedIn = isLoggedIn()
+      setIsUserLoggedIn(loggedIn)
+      if (loggedIn) {
+        const currentUserId = getUserId()
+        if (currentUserId) {
+          setUserId(currentUserId)
+        }
+      } else {
+        setUserId(null)
+      }
+    }
+
+    checkLoginStatus()
     fetchCart()
   }, [fetchCart])
 
@@ -99,6 +114,7 @@ export const ShoppingCartProvider: React.FC<{ children: ReactNode }> = ({
         userId,
         setUserId,
         refreshCart,
+        isUserLoggedIn,
       }}
     >
       {children}

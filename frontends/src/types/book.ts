@@ -7,7 +7,3 @@ export interface Book {
   price: number
   stock: number
 }
-
-export interface IsbnBook {
-  isbn: string[]
-}

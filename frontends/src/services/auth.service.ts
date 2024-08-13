@@ -27,10 +27,12 @@ interface UserResponse {
 
 const setAuthToken = (token: string) => {
   if (token) {
-    localStorage.setItem("token", token)
+    sessionStorage.setItem("token", token)
+    sessionStorage.setItem("isLoggedIn", "true")
     axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`
   } else {
-    localStorage.removeItem("token")
+    sessionStorage.removeItem("token")
+    sessionStorage.removeItem("isLoggedIn")
     delete axiosInstance.defaults.headers.common["Authorization"]
   }
 }
@@ -49,23 +51,41 @@ const login = async (
   const response = await axiosInstance.post<UserResponse>(`/Account/Login`, data)
   if (response.data.token) {
     setAuthToken(response.data.token)
+    sessionStorage.setItem("userId", response.data.id)
   }
   return {
     ...response.data,
-    userId: response.data.id, // Assuming the backend returns 'id' as the user ID
+    userId: response.data.id,
   }
 }
 
 const logout = () => {
   setAuthToken("")
+  sessionStorage.removeItem("userId")
 }
 
-// Function to initialize the auth state from local storage
+// Function to initialize the auth state from session storage
 const initializeAuth = () => {
-  const token = localStorage.getItem("token")
+  const token = sessionStorage.getItem("token")
   if (token) {
     setAuthToken(token)
   }
 }
 
-export { register, login, logout, setAuthToken, initializeAuth }
+const isLoggedIn = (): boolean => {
+  return sessionStorage.getItem("isLoggedIn") === "true"
+}
+
+const getUserId = (): string | null => {
+  return sessionStorage.getItem("userId")
+}
+
+export {
+  register,
+  login,
+  logout,
+  setAuthToken,
+  initializeAuth,
+  isLoggedIn,
+  getUserId,
+}

@@ -39,7 +39,7 @@ const ScrollItems: React.FC<ScrollItemsProps> = ({ books, isLoading }) => {
     }
 
     try {
-      await addToCart(book.id, 1)
+      await addToCart(book.id, 1) // Pass the bookId
       toast({
         title: "Added to cart",
         description: `${book.title} has been added to your cart.`,
@@ -65,7 +65,7 @@ const ScrollItems: React.FC<ScrollItemsProps> = ({ books, isLoading }) => {
                   <Skeleton className="h-5 w-32" />
                 ) : (
                   <CardTitle>
-                    <p className="text-sm">{(book as Book).title}</p>
+                    <div className="text-sm">{(book as Book).title}</div>
                   </CardTitle>
                 )}
               </CardHeader>

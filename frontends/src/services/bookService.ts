@@ -1,5 +1,5 @@
 import axios from "axios"
-import { Book, IsbnBook } from "@/types/book"
+import { Book } from "@/types/book"
 
 const API_URL = "http://localhost:5148/api/Books"
 
@@ -56,8 +56,6 @@ export const bookService = {
         isbn: isbn,
         stock: 0, // This needs to be set manually
         cover: bookData.cover ? bookData.cover.large : undefined,
-        publish_date: bookData.publish_date,
-        number_of_pages: bookData.number_of_pages,
       }
 
       return bookInfo

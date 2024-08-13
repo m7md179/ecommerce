@@ -22,7 +22,10 @@ const ShoppingCart: React.FC = () => {
   useEffect(() => {
     if (cart) {
       const items = cart.items.reduce((sum, item) => sum + item.quantity, 0)
-      const price = cart.items.reduce((sum, item) => sum + 1 * item.quantity, 0)
+      const price = cart.items.reduce(
+        (sum, item) => sum + (item.book?.price || 0) * item.quantity,
+        0,
+      )
       setTotalItems(items)
       setTotalPrice(price)
     } else {
@@ -45,8 +48,10 @@ const ShoppingCart: React.FC = () => {
       className="flex justify-between items-center mb-4 bg-gray-100 p-2 rounded"
     >
       <div className="flex flex-col">
-        <span className="font-semibold">book title</span>
-        <span className="text-sm text-gray-600">$1 each</span>
+        <span className="font-semibold">{item.book?.title || "Unknown Book"}</span>
+        <span className="text-sm text-gray-600">
+          ${item.book?.price.toFixed(2) || "N/A"} each
+        </span>
       </div>
       <div className="flex items-center">
         <Button

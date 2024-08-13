@@ -58,9 +58,9 @@ export default function Home() {
                 <h2 className="text-xl md:text-3xl font-bold">
                   Discover Amazing Books
                 </h2>
-                <p className="mt-4 text-gray-600">
+                <div className="mt-4 text-gray-600">
                   Explore a wide variety of books and find your next great read.
-                </p>
+                </div>
               </div>
               <Image
                 alt="banner"

@@ -1,4 +1,8 @@
-import { ShoppingCartDto, ShoppingCartItemDto } from "@/types/ShoppingCart"
+import {
+  ShoppingCartDto,
+  ShoppingCartItemDto,
+  AddToCartDto,
+} from "@/types/ShoppingCart"
 import axios from "axios"
 
 const API_URL = "http://localhost:5148/api/ShoppingCart"
@@ -14,13 +18,9 @@ export const ShoppingCartService = {
     }
   },
 
-  addItem: async (
-    userId: string,
-    bookId: number,
-    quantity: number,
-  ): Promise<void> => {
+  addItem: async (userId: string, bookId: number, quantity: number): Promise<void> => {
     try {
-      const item: ShoppingCartItemDto = { bookId, quantity }
+      const item: AddToCartDto = { bookId, quantity }
       await axios.post(`${API_URL}/${userId}/items`, item)
     } catch (error) {
       console.error("Error adding item to cart:", error)

@@ -1,8 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { register, login } from "@/services/auth.service"
+import { register, login, isLoggedIn, getUserId } from "@/services/auth.service"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -25,6 +25,16 @@ export default function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (isLoggedIn()) {
+      const userId = getUserId()
+      if (userId) {
+        setUserId(userId)
+        router.push("/")
+      }
+    }
+  }, [])
 
   const handleRegister = async () => {
     try {
