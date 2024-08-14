@@ -45,9 +45,22 @@ export default function Home() {
     }
   }
 
+  const searchBooks = async (query: string): Promise<Book[]> => {
+    try {
+      return await bookService.searchBooks(query)
+    } catch (error) {
+      console.error("Error searching books:", error)
+      return []
+    }
+  }
+
   return (
     <main>
-      <Navbar onClick={goToLoginPage} onSearch={handleSearch} />
+      <Navbar
+        onClick={goToLoginPage}
+        onSearch={handleSearch}
+        searchBooks={searchBooks}
+      />
       <section className="flex flex-col items-center justify-center p-8">
         {searchResults.length > 0 ? (
           <SearchResult searchResults={searchResults} />

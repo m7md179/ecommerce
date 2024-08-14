@@ -1,5 +1,6 @@
 import axios from "axios"
 import { Book } from "@/types/book"
+import { getCategoryFromISBN } from "@/utils/bookUtils"
 
 const API_URL = "http://localhost:5148/api/Books"
 
@@ -35,6 +36,21 @@ export const bookService = {
     return response.data
   },
 
+  getBooksByCategory: async (
+    mainCategory: string,
+    subCategory: string,
+  ): Promise<Book[]> => {
+    const allBooks = await bookService.getAllBooks()
+    return allBooks.filter((book) => {
+      const category = getCategoryFromISBN(book.isbn)
+      return (
+        category &&
+        category.mainCategory === mainCategory &&
+        category.subCategory === subCategory
+      )
+    })
+  },
+
   getBookInfo: async (isbn: string): Promise<Book | null> => {
     const url = `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`
 
@@ -46,16 +62,19 @@ export const bookService = {
         console.log("Book not found")
         return null
       }
+
+      const category = getCategoryFromISBN(isbn)
+
       const bookInfo: Book = {
-        id: 0, // This will be set by the backend when adding the book
+        id: 0,
         title: bookData.title,
-        authors: bookData.authors
-          ? bookData.authors.map((author: any) => author.name)
-          : ["Unknown"],
-        price: 0, // This needs to be set manually
+        authors: bookData.authors,
+        price: 0,
         isbn: isbn,
-        stock: 0, // This needs to be set manually
-        cover: bookData.cover ? bookData.cover.large : undefined,
+        stock: 0,
+        cover: bookData.cover ? bookData.cover.large : "/placeholder-cover.jpg",
+        mainCategory: category ? category.mainCategory : "Unknown",
+        subCategory: category ? category.subCategory : "Unknown",
       }
 
       return bookInfo

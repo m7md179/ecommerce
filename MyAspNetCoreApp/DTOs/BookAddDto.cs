@@ -12,5 +12,6 @@ namespace MyAspNetCoreApp.DTOs
         public decimal Price { get; set; }
         public string ISBN { get; set; }
         public int Stock { get; set; }
+        public string Cover { get; set; }
     }
 }

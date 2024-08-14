@@ -67,3 +67,19 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* .NavigationMenuItem:hover > .NavigationMenuContent,
+.NavigationMenuTrigger:focus + .NavigationMenuContent,
+.NavigationMenuTrigger:hover + .NavigationMenuContent {
+  display: block;
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Hide the menu content by default */
+/* .NavigationMenuContent {
+  display: none;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.2s linear;
+} */

@@ -1,5 +1,7 @@
 "use client"
+
 import React, { useEffect, useState } from "react"
+import { useParams, useRouter } from "next/navigation"
 import {
   Pagination,
   PaginationContent,
@@ -10,38 +12,13 @@ import {
 } from "@/components/ui/pagination"
 import { bookService } from "@/services/bookService"
 import { Book } from "@/types/book"
-import BookCard from "./components/BookCard"
+import BookCard from "@/components/BookCard"
 import Navbar from "@/components/Navbar"
-import { useRouter } from "next/navigation"
 import { Skeleton } from "@/components/ui/skeleton"
 import SearchResult from "@/components/SearchResult"
 import { useShoppingCart } from "@/context/ShoppingCartContext"
 
 const ITEMS_PER_PAGE = 12
-const thrillerIsbns = [
-  "9780385533225",
-  "9780262033848",
-  "9780679783268",
-  "9780316015844",
-  "9780451524935",
-  "9780553382563",
-  "9780060935467",
-  "9780307346605",
-  "9780767908184",
-  "9780385490818",
-  "9780743496704",
-  "9780062316097",
-  "9781400032716",
-  "9780060838676",
-  "9780812981605",
-  "9780316769488",
-  "9780316024990",
-  "9780767922711",
-  "9780375703768",
-  "9780679785897",
-  "9781400079273",
-  "9781638581284",
-]
 
 function SubCategory() {
   const [books, setBooks] = useState<Book[]>([])
@@ -49,24 +26,26 @@ function SubCategory() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchResults, setSearchResults] = useState<Book[]>([])
+
   const router = useRouter()
+  const params = useParams()
+  const mainCategory = params?.mainCategory as string
+  const subCategory = params?.subCategory as string
 
   const { addToCart } = useShoppingCart()
 
   useEffect(() => {
     async function fetchBooks() {
+      if (!mainCategory || !subCategory) return
+
       setIsLoading(true)
       setError(null)
       try {
-        const startIndex = currentPage * ITEMS_PER_PAGE
-        const endIndex = startIndex + ITEMS_PER_PAGE
-        const isbnsToFetch = thrillerIsbns.slice(startIndex, endIndex)
-
-        const bookPromises = isbnsToFetch.map((isbn) =>
-          bookService.getBookInfo(isbn),
+        const booksData = await bookService.getBooksByCategory(
+          mainCategory,
+          subCategory,
         )
-        const booksData = await Promise.all(bookPromises)
-        setBooks(booksData.filter((book): book is Book => book !== null))
+        setBooks(booksData)
       } catch (err) {
         setError("Failed to fetch books. Please try again later.")
         console.error("Error fetching books:", err)
@@ -75,9 +54,9 @@ function SubCategory() {
       }
     }
     fetchBooks()
-  }, [currentPage])
+  }, [mainCategory, subCategory])
 
-  const totalPages = Math.ceil(thrillerIsbns.length / ITEMS_PER_PAGE)
+  const totalPages = Math.ceil(books.length / ITEMS_PER_PAGE)
 
   const goToLoginPage = () => {
     router.push("/login")
@@ -93,11 +72,17 @@ function SubCategory() {
     }
   }
 
+  const paginatedBooks = books.slice(
+    currentPage * ITEMS_PER_PAGE,
+    (currentPage + 1) * ITEMS_PER_PAGE,
+  )
+
   return (
     <main>
       <Navbar onClick={goToLoginPage} onSearch={handleSearch} />
       <div className="h-[200px]"></div>
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
+        <h1 className="text-2xl font-bold mb-4">{`${mainCategory} > ${subCategory}`}</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full max-w-6xl">
           {searchResults.length > 0 ? (
             <SearchResult searchResults={searchResults} />
@@ -113,7 +98,7 @@ function SubCategory() {
               </div>
             ))
           ) : (
-            books.map((book, i) => <BookCard key={i} book={book} />)
+            paginatedBooks.map((book, i) => <BookCard key={i} book={book} />)
           )}
         </div>
         <div className="my-14">
