@@ -1,3 +1,4 @@
+"use client"
 import React, { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import {
@@ -24,9 +25,9 @@ import {
 import { FaShoppingCart } from "react-icons/fa"
 import { useShoppingCart } from "@/context/ShoppingCartContext"
 import { ShoppingCartItemDto } from "@/types/ShoppingCart"
-import Link from "next/link"
+import { Input } from "@/components/ui/input"
 
-const ShoppingCart: React.FC = () => {
+const Checkout: React.FC = () => {
   const { cart, removeFromCart, updateItemQuantity, clearCart } = useShoppingCart()
   const [totalItems, setTotalItems] = useState(0)
   const [totalPrice, setTotalPrice] = useState(0)
@@ -119,32 +120,32 @@ const ShoppingCart: React.FC = () => {
   )
 
   return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="ghost" className="relative">
-          <FaShoppingCart />
-          {totalItems > 0 && (
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-              {totalItems}
-            </span>
-          )}
-        </Button>
-      </SheetTrigger>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>Shopping Cart</SheetTitle>
-          <SheetDescription>
-            You have {totalItems} item(s) in your cart
-          </SheetDescription>
-        </SheetHeader>
-        <div className="py-4 max-h-[60vh] overflow-y-auto">
-          {cart?.items.length ? (
-            cart.items.map(renderCartItem)
-          ) : (
-            <p className="text-center text-gray-500">Your cart is empty</p>
-          )}
+    <div>
+      <div>
+        <div>
+          <div>Shopping Cart</div>
+          <div>You have {totalItems} item(s) in your cart</div>
         </div>
-        <SheetFooter>
+        <div className="grid grid-cols-2 ">
+          <div className="flex flex-col items-center justify-center gap-y-5">
+            <Input
+              type="text"
+              placeholder="placeholder"
+              className="flex-1 px-4 py-2 text-foreground bg-transparent border-none focus:outline-none"
+            />
+            <input type="text" className="bg-gray-200" />
+            <input type="text" className="bg-gray-200" />
+            <input type="text" className="bg-gray-200" />
+          </div>
+          <div className="py-4 max-h-[60vh] overflow-y-auto">
+            {cart?.items.length ? (
+              cart.items.map(renderCartItem)
+            ) : (
+              <p className="text-center text-gray-500">Your cart is empty</p>
+            )}
+          </div>
+        </div>
+        <div>
           <div className="flex flex-col items-stretch w-full">
             <div className="flex justify-between items-center mb-4">
               <span className="font-semibold">Total:</span>
@@ -172,15 +173,13 @@ const ShoppingCart: React.FC = () => {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-              <SheetClose asChild>
-                <Button disabled={!cart?.items.length}>
-                  <Link href="/checkout">Checkout</Link>{" "}
-                </Button>
-              </SheetClose>
+              <div>
+                <Button disabled={!cart?.items.length}>Checkout</Button>
+              </div>
             </div>
           </div>
-        </SheetFooter>
-      </SheetContent>
+        </div>
+      </div>
       <AlertDialog
         open={itemToRemove !== null}
         onOpenChange={() => setItemToRemove(null)}
@@ -198,8 +197,8 @@ const ShoppingCart: React.FC = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </Sheet>
+    </div>
   )
 }
 
-export default ShoppingCart
+export default Checkout

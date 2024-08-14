@@ -72,6 +72,15 @@ function SubCategory() {
     }
   }
 
+  const searchBooks = async (query: string): Promise<Book[]> => {
+    try {
+      return await bookService.searchBooks(query)
+    } catch (error) {
+      console.error("Error searching books:", error)
+      return []
+    }
+  }
+
   const paginatedBooks = books.slice(
     currentPage * ITEMS_PER_PAGE,
     (currentPage + 1) * ITEMS_PER_PAGE,
@@ -79,7 +88,11 @@ function SubCategory() {
 
   return (
     <main>
-      <Navbar onClick={goToLoginPage} onSearch={handleSearch} />
+      <Navbar
+        onClick={goToLoginPage}
+        onSearch={handleSearch}
+        searchBooks={searchBooks}
+      />
       <div className="h-[200px]"></div>
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
         <h1 className="text-2xl font-bold mb-4">{`${mainCategory} > ${subCategory}`}</h1>
